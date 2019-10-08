@@ -20,7 +20,12 @@ function reducer(state, action) {
 					{
 						id: Date.now(),
 						item: state.todo,
-						completed: false
+						due: state.todoDue,
+						completed: false,
+						tags: state.todoTags
+							.toLowerCase()
+							.replace(/[^a-z,]/g, '')
+							.split(',')
 					}
 				],
 				todo: ""
@@ -53,6 +58,8 @@ function reducer(state, action) {
 	}
 	localStorage.setItem('app_todos_search', JSON.stringify(finalState.search));
 	localStorage.setItem('app_todos_add', JSON.stringify(finalState.todo));
+	localStorage.setItem('app_todos_add_due', JSON.stringify(finalState.todoDue));
+	localStorage.setItem('app_todos_add_tags', JSON.stringify(finalState.todoTags));
 	localStorage.setItem('app_todos_list', JSON.stringify(finalState.todos));
 	return finalState;
 }
@@ -61,11 +68,15 @@ const initialState = () => {
 	const storage = {
 		search: localStorage.getItem('app_todos_search'),
 		todo: localStorage.getItem('app_todos_add'),
+		todoDue: localStorage.getItem('app_todos_add_due'),
+		todoTags: localStorage.getItem('app_todos_add_tags'),
 		todos: localStorage.getItem('app_todos_list'),
 	}
 	return {
 		search: (storage.search ? JSON.parse(storage.search) : ""),
 		todo: (storage.todo ? JSON.parse(storage.todo) : ""),
+		todoDue: (storage.todoDue ? JSON.parse(storage.todoDue) : ""),
+		todoTags: (storage.todoTags ? JSON.parse(storage.todoTags) : ""),
 		todos: (storage.todos ? JSON.parse(storage.todos) : []),
 	}
 }
@@ -92,20 +103,14 @@ export default function App(props) {
 			type: ADD_TODO
 		});
 	}
-	const searchOnChange = (e) => {
+	const inputOnChange = (e) => {
 		dispatch({
 			type: ON_INPUT_CHANGE,
-			payload: { search: e.target.value }
-		});
-	}
-	const todoOnChange = (e) => {
-		dispatch({
-			type: ON_INPUT_CHANGE,
-			payload: { todo: e.target.value }
+			payload: { [e.target.name]: e.target.value }
 		});
 	}
 
-	const { todos, todo, search } = state;
+	const { todos, todo, todoDue, search } = state;
 	const searchedTodos = search ? todos.filter(_todo => _todo.item.includes(search)) : todos;
 
 	return (
@@ -113,9 +118,9 @@ export default function App(props) {
 			todos: searchedTodos,
 			toggleComplete,
 			search,
-			searchOnChange,
 			todo,
-			todoOnChange,
+			todoDue,
+			inputOnChange,
 			addTodo,
 			removeTodos
 		}}>
