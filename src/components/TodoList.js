@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import TodosContext from '../contexts/TodosContext';
 import Todo from './Todo';
-// your components will all go in this `component` directory.
-// feel free to change this component.js into TodoList.js
-export default function TodoList({ todos }) {
+
+export default function TodoList() {
+	const { todos } = useContext(TodosContext)
 	return (
 		<div className="todolist">
 			<h1>Todo List</h1>
@@ -11,7 +12,6 @@ export default function TodoList({ todos }) {
 					<Todo
 						key={todo.id}
 						todo={todo}
-						toggleComplete={this.props.toggleComplete}
 					/>) : null
 			}
 		</div>

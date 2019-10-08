@@ -2,6 +2,7 @@ import React, { useReducer } from 'react';
 import './components/Todo.css';
 import TodoList from './components/TodoList';
 import TodoForm from './components/TodoForm';
+import TodosContext from './contexts/TodosContext';
 
 //const todo_list = (JSON.parse(localStorage.getItem('todo_list'))).todos || [];
 const ADD_TODO = 'ADD_TODO';
@@ -107,18 +108,19 @@ export default function App(props) {
 	const { todos, todo, search } = state;
 	const searchedTodos = search ? todos.filter(_todo => _todo.item.includes(search)) : todos;
 
-	return (<>
-		<TodoList
-			todos={searchedTodos}
-			toggleComplete={toggleComplete}
-		/>
-		<TodoForm
-			search={search}
-			searchOnChange={searchOnChange}
-			todo={todo}
-			todoOnChange={todoOnChange}
-			addTodo={addTodo}
-			removeTodos={removeTodos}
-		/>
-	</>);
+	return (
+		<TodosContext.Provider value={{
+			todos: searchedTodos,
+			toggleComplete,
+			search,
+			searchOnChange,
+			todo,
+			todoOnChange,
+			addTodo,
+			removeTodos
+		}}>
+			<TodoList />
+			<TodoForm />
+		</TodosContext.Provider>
+	);
 }
