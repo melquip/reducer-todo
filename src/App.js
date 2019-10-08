@@ -1,92 +1,107 @@
-import React from 'react';
-import './components/TodoComponents/Todo.css';
-import TodoList from './components/TodoComponents/TodoList';
+import React, { useReducer } from 'react';
+import './components/Todo.css';
+import TodoList from './components/TodoList';
 import TodoForm from './components/TodoForm';
 
-const todo_list = (JSON.parse(localStorage.getItem('todo_list'))).todos || [];
-export default class App extends React.Component {
-	// you will need a place to store your state in this component.
-	// design `App` to be the parent component of your application.
-	// this component is going to take care of state, and any change handlers you need to work with your state
-	constructor(props) {
-		super(props);
-		this.state = {
-			search: "",
-			todo: "",
-			todos: todo_list,
-		}
+//const todo_list = (JSON.parse(localStorage.getItem('todo_list'))).todos || [];
+const ADD_TODO = 'ADD_TODO';
+const TOGGLE_COMPLETE = 'TOGGLE_COMPLETE';
+const CLEAR_COMPLETE = 'CLEAR_COMPLETE';
+const ON_INPUT_CHANGE = 'ON_INPUT_CHANGE';
+function reducer(state, action) {
+	switch (action.type) {
+		case ADD_TODO:
+			return {
+				...state,
+				todos: [
+					...state.todos,
+					{
+						id: Date.now(),
+						task: state.todo,
+						completed: false
+					}
+				],
+				todo: ""
+			}
+		case TOGGLE_COMPLETE:
+			return {
+				...state,
+				todos: state.todos.map(todo => {
+					if (todo.id !== action.payload) return todo;
+					return { ...todo, completed: !todo.completed }
+				})
+			};
+		case CLEAR_COMPLETE:
+			return {
+				...state,
+				todos: state.todos.filter(todo => !todo.completed)
+			};
+		case ON_INPUT_CHANGE:
+			return {
+				...state,
+				...action.payload
+			};
+		default:
+			return state;
 	}
-	persistState = (key, value) => {
-		localStorage.setItem(key, value);
-	}
-	toggleComplete = (id) => {
+}
+
+export default function App(props) {
+	const [state, dispatch] = useReducer(reducer, {
+		search: "",
+		todo: "",
+		todos: [],
+	})
+	const toggleComplete = (id) => {
 		return (event => {
-			this.setState(currentState => {
-				const state = {
-					todos: currentState.todos.map(todo => {
-						if (todo.id !== id) return todo;
-						return { ...todo, completed: !todo.completed }
-					})
-				};
-				this.persistState('todo_list', JSON.stringify(state));
-				return state;
+			dispatch({
+				type: TOGGLE_COMPLETE,
+				payload: id
 			});
 		});
 	}
-	removeTodos = () => {
-		this.setState(currentState => {
-			const state = {
-				todos: currentState.todos.filter(todo => !todo.completed),
-			};
-			this.persistState('todo_list', JSON.stringify(state));
-			return state;
+	const removeTodos = () => {
+		dispatch({
+			type: CLEAR_COMPLETE
 		});
 	}
-	addTodo = (e) => {
+	const addTodo = (e) => {
 		e.preventDefault();
-		this.setState(currentState => {
-			if (!currentState.todo) return false;
-			const state = {
-				todos: [
-					...currentState.todos,
-					{
-						id: Date.now(),
-						task: currentState.todo,
-						completed: false
-					}
-				]
-			};
-			this.persistState('todo_list', JSON.stringify(state));
-			return { ...state, todo: "" };
+		if (!state.todo) return false;
+		dispatch({
+			type: ADD_TODO
 		});
 	}
-	searchOnChange = (e) => {
-		this.setState({
-			search: e.target.value
+	const searchOnChange = (e) => {
+		dispatch({
+			type: ON_INPUT_CHANGE,
+			payload: { search: e.target.value }
 		});
 	}
-	todoOnChange = (e) => {
-		this.setState({
-			todo: e.target.value
+	const todoOnChange = (e) => {
+		dispatch({
+			type: ON_INPUT_CHANGE,
+			payload: { todo: e.target.value }
 		});
 	}
-	render() {
-		const { todos, todo, search } = this.state;
-		const searchedTodos = search ? 
-			todos.filter(_todo => _todo.task.includes(search)) : todos;
-		return (<>
-			<TodoList
-				data={searchedTodos}
-				toggleComplete={this.toggleComplete}
-			/>
-			<TodoForm
-				search={search}
-				searchOnChange={this.searchOnChange}
-				todo={todo}
-				todoOnChange={this.todoOnChange}
-				addTodo={this.addTodo}
-				removeTodos={this.removeTodos}
-			/>
-		</>);
-	}
+
+	const { todos, todo, search } = state;
+	const searchedTodos = search ?
+		todos.filter(_todo => _todo.task.includes(search)) : todos;
+
+
+	return (<>
+		<TodoList
+			data={searchedTodos}
+			toggleComplete={toggleComplete}
+		/>
+		<TodoForm
+			search={search}
+			searchOnChange={searchOnChange}
+			todo={todo}
+			todoOnChange={todoOnChange}
+			addTodo={addTodo}
+			removeTodos={removeTodos}
+		/>
+	</>);
 }
