@@ -109,7 +109,7 @@ export default function App(props) {
 
 	return (<>
 		<TodoList
-			data={searchedTodos}
+			todos={searchedTodos}
 			toggleComplete={toggleComplete}
 		/>
 		<TodoForm
