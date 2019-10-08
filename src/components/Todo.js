@@ -7,12 +7,12 @@ export default function Todo({ todo }) {
 	const isOverdue = Date.now() > (new Date(todo.due));
 	return (
 		<div
-			className={`task task_${todo.id}${todo.completed && ' completed'}`}
+			className={`task task_${todo.id}${todo.completed ? ' completed' : ''}`}
 			onClick={toggleComplete(todo.id)}
 		>
 			"<span>{todo.item}</span>" is {!todo.completed && 'not '}complete!
 			<br />Due by {moment(todo.due).format('MMMM Do YYYY')}
-			{isOverdue ? <>
+			{!todo.completed && isOverdue ? <>
 				<br /><span>This task is overdue!</span>
 			</> : null}
 			{

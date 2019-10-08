@@ -22,10 +22,9 @@ function reducer(state, action) {
 						item: state.todo,
 						due: state.todoDue,
 						completed: false,
-						tags: state.todoTags
-							.toLowerCase()
-							.replace(/[^a-z,]/g, '')
-							.split(',')
+						tags: state.todoTags ?
+							state.todoTags.toLowerCase().replace(/[^a-z,]/g, '').split(',')
+							: []
 					}
 				],
 				todo: ""
@@ -56,28 +55,18 @@ function reducer(state, action) {
 			finalState = state;
 			break;
 	}
-	localStorage.setItem('app_todos_search', JSON.stringify(finalState.search));
-	localStorage.setItem('app_todos_add', JSON.stringify(finalState.todo));
-	localStorage.setItem('app_todos_add_due', JSON.stringify(finalState.todoDue));
-	localStorage.setItem('app_todos_add_tags', JSON.stringify(finalState.todoTags));
-	localStorage.setItem('app_todos_list', JSON.stringify(finalState.todos));
+	localStorage.setItem('app_todos_state', JSON.stringify(finalState));
 	return finalState;
 }
 
 const initialState = () => {
-	const storage = {
-		search: localStorage.getItem('app_todos_search'),
-		todo: localStorage.getItem('app_todos_add'),
-		todoDue: localStorage.getItem('app_todos_add_due'),
-		todoTags: localStorage.getItem('app_todos_add_tags'),
-		todos: localStorage.getItem('app_todos_list'),
-	}
-	return {
-		search: (storage.search ? JSON.parse(storage.search) : ""),
-		todo: (storage.todo ? JSON.parse(storage.todo) : ""),
-		todoDue: (storage.todoDue ? JSON.parse(storage.todoDue) : ""),
-		todoTags: (storage.todoTags ? JSON.parse(storage.todoTags) : ""),
-		todos: (storage.todos ? JSON.parse(storage.todos) : []),
+	const storage = localStorage.getItem('app_todos_state');
+	return storage ? JSON.parse(storage) : {
+		search: "",
+		todo: "",
+		todoDue: "",
+		todoTags: "",
+		todos: [],
 	}
 }
 
