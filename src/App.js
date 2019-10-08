@@ -9,49 +9,68 @@ const TOGGLE_COMPLETE = 'TOGGLE_COMPLETE';
 const CLEAR_COMPLETE = 'CLEAR_COMPLETE';
 const ON_INPUT_CHANGE = 'ON_INPUT_CHANGE';
 function reducer(state, action) {
+	let finalState = state;
 	switch (action.type) {
 		case ADD_TODO:
-			return {
+			finalState = {
 				...state,
 				todos: [
 					...state.todos,
 					{
 						id: Date.now(),
-						task: state.todo,
+						item: state.todo,
 						completed: false
 					}
 				],
 				todo: ""
 			}
+			break;
 		case TOGGLE_COMPLETE:
-			return {
+			finalState = {
 				...state,
 				todos: state.todos.map(todo => {
 					if (todo.id !== action.payload) return todo;
 					return { ...todo, completed: !todo.completed }
 				})
 			};
+			break;
 		case CLEAR_COMPLETE:
-			return {
+			finalState = {
 				...state,
 				todos: state.todos.filter(todo => !todo.completed)
 			};
+			break;
 		case ON_INPUT_CHANGE:
-			return {
+			finalState = {
 				...state,
 				...action.payload
 			};
+			break;
 		default:
-			return state;
+			finalState = state;
+			break;
+	}
+	localStorage.setItem('app_todos_search', JSON.stringify(finalState.search));
+	localStorage.setItem('app_todos_add', JSON.stringify(finalState.todo));
+	localStorage.setItem('app_todos_list', JSON.stringify(finalState.todos));
+	return finalState;
+}
+
+const initialState = () => {
+	const storage = {
+		search: localStorage.getItem('app_todos_search'),
+		todo: localStorage.getItem('app_todos_add'),
+		todos: localStorage.getItem('app_todos_list'),
+	}
+	return {
+		search: (storage.search ? JSON.parse(storage.search) : ""),
+		todo: (storage.todo ? JSON.parse(storage.todo) : ""),
+		todos: (storage.todos ? JSON.parse(storage.todos) : []),
 	}
 }
 
 export default function App(props) {
-	const [state, dispatch] = useReducer(reducer, {
-		search: "",
-		todo: "",
-		todos: [],
-	})
+	const [state, dispatch] = useReducer(reducer, initialState());
 	const toggleComplete = (id) => {
 		return (event => {
 			dispatch({
@@ -86,9 +105,7 @@ export default function App(props) {
 	}
 
 	const { todos, todo, search } = state;
-	const searchedTodos = search ?
-		todos.filter(_todo => _todo.task.includes(search)) : todos;
-
+	const searchedTodos = search ? todos.filter(_todo => _todo.item.includes(search)) : todos;
 
 	return (<>
 		<TodoList

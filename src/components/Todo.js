@@ -8,7 +8,7 @@ export default class Todo extends React.Component {
 				className={`task task_${todo.id}${todo.completed && ' completed'}`}
 				onClick={this.props.toggleComplete(todo.id)}
 			>
-				"<span>{todo.task}</span>" is {!todo.completed && 'not '}complete!
+				"<span>{todo.item}</span>" is {!todo.completed && 'not '}complete!
 			</div>
 		);
 	}
