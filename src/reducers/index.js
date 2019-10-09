@@ -27,7 +27,9 @@ export function reducer(state, action) {
 			finalState = {
 				...state,
 				todos: state.todos.map(todo => {
-					if (todo.id !== action.payload) return todo;
+					if (todo.id !== action.payload) { 
+						return todo;
+					}
 					return { ...todo, completed: !todo.completed }
 				})
 			};

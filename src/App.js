@@ -4,40 +4,33 @@ import TodoList from './components/TodoList';
 import TodoForm from './components/TodoForm';
 import TodosContext from './contexts/TodosContext';
 
-import {
-	ADD_TODO,
-	TOGGLE_COMPLETE,
-	CLEAR_COMPLETE,
-	ON_INPUT_CHANGE,
-	reducer,
-	initialState
-} from './reducers';
+import * as types from './reducers';
 
 export default function App(props) {
-	const [state, dispatch] = useReducer(reducer, initialState());
+	const [state, dispatch] = useReducer(types.reducer, types.initialState());
 	const toggleComplete = (id) => {
 		return (event => {
 			dispatch({
-				type: TOGGLE_COMPLETE,
+				type: types.TOGGLE_COMPLETE,
 				payload: id
 			});
 		});
 	}
 	const removeTodos = () => {
 		dispatch({
-			type: CLEAR_COMPLETE
+			type: types.CLEAR_COMPLETE
 		});
 	}
 	const addTodo = (e) => {
 		e.preventDefault();
 		if (!state.todo) return false;
 		dispatch({
-			type: ADD_TODO
+			type: types.ADD_TODO
 		});
 	}
 	const inputOnChange = (e) => {
 		dispatch({
-			type: ON_INPUT_CHANGE,
+			type: types.ON_INPUT_CHANGE,
 			payload: { [e.target.name]: e.target.value }
 		});
 	}
