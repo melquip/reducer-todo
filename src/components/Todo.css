@@ -1,0 +1,35 @@
+body {
+	font-family: 'Helvetica', 'Arial', sans-serif;
+}
+input, button {
+	margin-right: 20px;
+}
+.todolist h1 {
+	text-shadow: 0 0 1px rgba(0, 0, 0, 1);
+	color: cadetblue;
+	margin: 0;
+}
+.todolist, .todoform {
+	padding: 20px;
+	max-width: 600px;
+	margin: 0 auto;
+	background-color: rgba(72, 139, 161, 0.2);
+}
+.task {
+	cursor: pointer;
+	padding: 20px 30px;
+	margin-top: 20px;
+	color: white;
+	background-color: rgba(72, 139, 161, 0.65);
+}
+.task span {
+	color: aquamarine;
+}
+.task.completed {
+	background-color:rgba(72, 139, 161, 1);
+}
+
+label {
+	display: block; 
+	margin-top: 20px;
+}
